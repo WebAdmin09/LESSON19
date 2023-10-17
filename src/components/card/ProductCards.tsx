@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Card } from "antd";
 import { ProductCardProps } from "../../types/product";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";

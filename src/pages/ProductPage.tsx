@@ -1,28 +1,24 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Button, Col, Flex, Form, Input, Modal, Row, Spin } from "antd";
-import ProductCard from "../components/card/ProductCards";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { ProductCardProps } from "../types/product";
-import request from "../server";
-import { getProduct } from "../redux/slices/productSlice";
-import { FolderAddTwoTone } from "@ant-design/icons";
-
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Button, Col, Row, Spin, Modal, Form, Input } from 'antd';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { ProductCardProps } from '../types/product';
+import { getProduct } from '../redux/slices/productSlice';
+import request from '../server';
+import { FolderAddTwoTone } from '@ant-design/icons';
+import ProductCard from '../components/card/ProductCards';
 
 const ProductPage = () => {
     const { products, loading } = useAppSelector((state) => state.product);
     const dispatch = useAppDispatch();
-
-    const params = useParams();
-    const [index] = useState(params.id);
-
+    const { id } = useParams<{ id: string }>();
     const [selected, setSelected] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
 
     useEffect(() => {
-        dispatch(getProduct(index));
-    }, [dispatch, index]);
+        dispatch(getProduct(id));
+    }, [dispatch, id]);
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -38,52 +34,49 @@ const ProductPage = () => {
         try {
             const values: ProductCardProps = await form.validateFields();
             if (selected === null) {
-                await request.post(`category/${params.id}/product`, values);
+                await request.post(`category/${id}/product`, values);
             } else {
-                await request.put(`category/${params.id}/product/${selected}`, values);
+                await request.put(`category/${id}/product/${selected}`, values);
             }
             closeModal();
-            dispatch(getProduct(index));
+            dispatch(getProduct(id));
         } catch (error) {
             console.log(error);
         }
     };
 
-    const editProduct = async (id: string) => {
-        setSelected(id);
+    const editProduct = async (productId: string) => {
+        setSelected(productId);
         try {
             setIsModalOpen(true);
-            const { data } = await request.get(`category/${params.id}/product/${id}`);
+            const { data } = await request.get(`category/${id}/product/${productId}`);
             form.setFieldsValue(data);
         } catch (err) {
             console.log(err);
         }
     };
 
-    const deleteProduct = async (id: string) => {
+    const deleteProduct = async (productId: string) => {
         try {
-            await request.delete(`category/${params.id}/product/${id}`);
-            dispatch(getProduct(index));
+            await request.delete(`category/${id}/product/${productId}`);
+            dispatch(getProduct(id));
         } catch (err) {
             console.log(err);
         }
     };
 
-    console.log(products);
-
     return (
         <div>
-            <Flex justify="space-between">
+            <Row justify="space-between">
                 <h1>Products ({products.length})</h1>
                 <Button onClick={showModal} className="primary">
                     <FolderAddTwoTone />
                 </Button>
-            </Flex>
+            </Row>
             <Spin spinning={loading}>
                 <Row gutter={8}>
                     {products.map((product) => (
                         <Col
-                            style={{ marginBottom: "10" }}
                             key={product.id}
                             className="gutter-row"
                             xs={24}
@@ -93,21 +86,20 @@ const ProductPage = () => {
                         >
                             <ProductCard
                                 {...product}
-                                editProduct={editProduct}
-                                deleteProduct={deleteProduct}
+                                editProduct={() => editProduct(product.id)}
+                                deleteProduct={() => deleteProduct(product.id)}
                             />
                         </Col>
                     ))}
                 </Row>
             </Spin>
             <Modal
-                open={isModalOpen}
+                visible={isModalOpen}
                 onOk={handleOk}
                 onCancel={closeModal}
                 title="Products"
             >
                 <Form
-                    name="product"
                     form={form}
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
@@ -116,36 +108,35 @@ const ProductPage = () => {
                     <Form.Item<ProductCardProps>
                         label="Name"
                         name="name"
-                        rules={[{ required: true, message: "Please fill!" }]}
+                        rules={[{ required: true, message: 'Please fill!' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item<ProductCardProps>
                         label="Price"
                         name="price"
-                        rules={[{ required: true, message: "Please fill!" }]}
+                        rules={[{ required: true, message: 'Please fill!' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item<ProductCardProps>
                         label="Discount"
                         name="discount"
-                        rules={[{ required: true, message: "Please fill!" }]}
+                        rules={[{ required: true, message: 'Please fill!' }]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item<ProductCardProps>
                         label="Description"
                         name="description"
-                        rules={[{ required: true, message: "Please fill!" }]}
+                        rules={[{ required: true, message: 'Please fill!' }]}
                     >
                         <Input />
                     </Form.Item>
-
                     <Form.Item<ProductCardProps>
                         label="Image"
                         name="image"
-                        rules={[{ required: true, message: "Please fill!" }]}
+                        rules={[{ required: true, message: 'Please fill!' }]}
                     >
                         <Input />
                     </Form.Item>
@@ -155,4 +146,4 @@ const ProductPage = () => {
     );
 };
 
-export default ProductPage
+export default ProductPage;
