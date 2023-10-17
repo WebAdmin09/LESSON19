@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { ProductCardProps } from '../types/product';
 import { getProduct } from '../redux/slices/productSlice';
 import request from '../server';
-import { FolderAddTwoTone } from '@ant-design/icons';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import ProductCard from '../components/card/ProductCards';
 
 const ProductPage = () => {
@@ -66,11 +66,11 @@ const ProductPage = () => {
     };
 
     return (
-        <div>
+        <div className='wrapper'>
             <Row justify="space-between">
                 <h1>Products ({products.length})</h1>
                 <Button onClick={showModal} className="primary">
-                    <FolderAddTwoTone />
+                <PlusCircleOutlined />
                 </Button>
             </Row>
             <Spin spinning={loading}>

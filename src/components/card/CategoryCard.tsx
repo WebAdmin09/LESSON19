@@ -34,7 +34,6 @@ const CategoryCard = ({
           height={200}
           src={image}
           alt={name}
-          style={{ objectFit: "cover" }}
         />
       }
       style={{ margin: "10px" }}
